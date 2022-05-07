@@ -1,19 +1,46 @@
 from xml.dom import minidom
 import numpy as np
 
-def classic_kNN(trainset, testset, k, leverage = False, show_progress = True):
+def classic_kNN(trainset, testset, k, normalize = False, leverage = False, show_progress = False):
     res = []
     tick = 0
 
+    # Normalize
+    if normalize:
+        temp_train = np.zeros(trainset.shape[0])
+        for i in range(0,6):
+
+            max_val = np.max(trainset[:, i])
+            min_val = np.min(trainset[:, i])
+
+            normalized = (trainset[:, i]-min_val)/(max_val-min_val)
+            temp_train = np.vstack((temp_train, normalized))
+
+        temp_train = temp_train[1:,:].T
+        trainset = np.hstack((temp_train, trainset[:,6].reshape(-1,1)))
+
+        temp_test = np.zeros(testset.shape[0])
+        for i in range(0,6):
+
+            max_val = np.max(testset[:, i])
+            min_val = np.min(testset[:, i])
+
+            normalized = (testset[:, i]-min_val)/(max_val-min_val)
+            temp_test = np.vstack((temp_test, normalized))
+
+        temp_test = temp_test[1:,:].T
+        testset = np.hstack((temp_test, testset[:,6].reshape(-1,1)))
+
+    # LOOP
     for test in testset:
         # Find k-Nearest Neighbor
-        nearest = [[None, 99999] for _ in range(k)]
+        nearest = [[None, 999999] for _ in range(k)]
         for train in trainset:
             distance = np.sum((train-test)**2)**(1/2)
             if distance < nearest[k-1][1]:
                 nearest.pop(k-1)
                 nearest.append([train, distance])
-                nearest.sort(key = lambda x: x[1])
+                nearest.sort(key = lambda x: x[1])        
 
         # Guess
         neigh_satis = 0
@@ -72,17 +99,16 @@ def analyze(res):
 import time
 
 data = np.loadtxt("satisfaction_data.csv", delimiter=",", dtype=np.float32)
-np.random.shuffle(data)
+#np.random.shuffle(data)
 trainset = data[:18000]
 testset = data[18000:]
 
 small_trainset = testset[:1800]
 small_testset = testset[1800:]
 
-
 print("start")
 s = time.time()
-res = classic_kNN(small_trainset, small_testset, 5, leverage=True)
+res = classic_kNN(small_trainset, small_testset, 5, normalize = True, leverage=False, show_progress=False)
 e = time.time()
 print("end")
 
