@@ -1,10 +1,10 @@
 import numpy as np
 
-def classic_kNN(trainset, testset, k=3, howmuch = True):
+def classic_kNN(trainset, testset, k, show_tick = True):
     res = []
     tick = 0
-    for test in testset:
 
+    for test in testset:
         # Find k-Nearest Neighbor
         nearest = [(None, 99999) for _ in range(k)]
         for train in trainset:
@@ -31,14 +31,24 @@ def classic_kNN(trainset, testset, k=3, howmuch = True):
 
         # DEBUG
         tick += 1
-        if howmuch: 
+        if show_tick: 
             if tick%100 == 0: print("now in %dth test data"%tick)
         pass
 
     return res
 
+def analyze(res):
+    count = 0
+    for line in res:
+        real = int(line[0][6])
+        guess = line[1]
+        if real == guess: count+=1
+    print("accuracy: %6f"%(count/len(res)))
     
-    
+
+###################
+
+import time
 
 data = np.loadtxt("satisfaction_data.csv", delimiter=",", dtype=np.float32)
 trainset = data[:18000]
@@ -47,9 +57,13 @@ testset = data[18000:]
 small_trainset = testset[:1800]
 small_testset = testset[1800:]
 
+
+
 print("start")
-res = classic_kNN(small_trainset, small_testset)
+s = time.time()
+res = classic_kNN(trainset, testset, 5)
+e = time.time()
 print("end")
 
-for i in range(len(res)):
-    print(res[i][0][6], res[i][1])
+analyze(res)
+print("time: %6f sec"%(e-s))
