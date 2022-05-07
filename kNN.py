@@ -1,7 +1,7 @@
 from xml.dom import minidom
 import numpy as np
 
-def classic_kNN(trainset, testset, k, normalize = False, leverage = False, show_progress = False):
+def kNN(trainset, testset, k, normalize = False, leverage = False, show_progress = False):
     res = []
     tick = 0
 
@@ -108,7 +108,7 @@ small_testset = testset[1800:]
 
 print("start")
 s = time.time()
-res = classic_kNN(small_trainset, small_testset, 5, normalize = True, leverage=False, show_progress=False)
+res = kNN(small_trainset, small_testset, 5, normalize = True, leverage=False, show_progress=False)
 e = time.time()
 print("end")
 
