@@ -1,4 +1,3 @@
-import sys
+import numpy as np
 
-print("hello")
-print(sys.argv)
+print(np.__version__)

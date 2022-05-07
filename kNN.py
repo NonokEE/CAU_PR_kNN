@@ -1,7 +1,6 @@
-from xml.dom import minidom
 import numpy as np
 
-def kNN(trainset, testset, k, normalize = False, leverage = False, show_process = False):
+def kNN(trainset, testset, k, normalize = False, leverage = False, show_process = False, has_answer = False):
     res = []
     tick = 0
 
@@ -83,10 +82,12 @@ def kNN(trainset, testset, k, normalize = False, leverage = False, show_process 
             if tick%100 == 0: print("now in %dth test data"%tick)
         pass
     
-    testset = np.hstack((testset, np.zeros(len(testset)).reshape(-1,1)))
-    for i in range(len(testset)): testset[i][7] = res[i]
+    if has_answer:
+        testset = np.hstack((testset, np.zeros(len(testset)).reshape(-1,1)))
+        for i in range(len(testset)): testset[i][7] = res[i]
+        return testset
 
-    return testset
+    else: return np.array(res)
 
 def get_accuracy(res):
     count = 0
