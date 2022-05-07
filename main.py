@@ -2,20 +2,15 @@ import sys
 import numpy as np
 from kNN import kNN, get_accuracy
 
-dataset = []
-NUM_DATASET = 1
-K_VALUE = 3
+TRAIN_PATH = sys.argv[1]
+TEST_PATH = sys.argv[1]
+K_VALUE = sys.argv[1]
+SHOW_PROCESS = sys.argv[1]
 
-for i in range(NUM_DATASET):
-    name = "./dataset/dataset" + str(i+1)
-    train = np.loadtxt(name+"_train.csv", delimiter= ",")
-    test = np.loadtxt(name+"_train.csv", delimiter= ",")
+train = np.loadtxt(TRAIN_PATH, delimiter= ",")
+test = np.loadtxt(TEST_PATH, delimiter= ",")
+result = kNN(train, test, K_VALUE, show_progress=SHOW_PROCESS)
 
-    dataset.append((train, test))
-
-resultset = []
-for i in range(NUM_DATASET):
-    print(str(i+1) + "th dataset")
     resultset.append(kNN(dataset[i][0], dataset[i][1], K_VALUE, show_progress=True))
 
 path = "./k" + str(K_VALUE) + "/"
