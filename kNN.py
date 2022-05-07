@@ -1,37 +1,58 @@
+from xml.dom import minidom
 import numpy as np
 
-def classic_kNN(trainset, testset, k, show_tick = True):
+def classic_kNN(trainset, testset, k, leverage = False, show_progress = True):
     res = []
     tick = 0
 
     for test in testset:
         # Find k-Nearest Neighbor
-        nearest = [(None, 99999) for _ in range(k)]
+        nearest = [[None, 99999] for _ in range(k)]
         for train in trainset:
             distance = np.sum((train-test)**2)**(1/2)
             if distance < nearest[k-1][1]:
                 nearest.pop(k-1)
-                nearest.append((train, distance))
+                nearest.append([train, distance])
                 nearest.sort(key = lambda x: x[1])
 
         # Guess
-        nearest = [n for n,d in nearest]
         neigh_satis = 0
         neigh_unsatis = 0
 
-        for neighbor in nearest:
-            
-            if neighbor[6] == 1: neigh_satis+=1
-            else               : neigh_unsatis+=1
+        if leverage:
+            max_distance = max(nearest, key=lambda x: x[1])[1]
+            min_distance = min(nearest, key=lambda x: x[1])[1]
 
-        if neigh_satis > neigh_unsatis: guess_result = 1
-        else                          : guess_result = 0
+            for neighbor in nearest: neighbor[1] = (neighbor[1]-min_distance)/(max_distance-min_distance)
+            middle_value = nearest[int(k/2)][1]
+            gab = 1 - middle_value
+            for neighbor in nearest: neighbor[1] += gab
+            for neighbor in nearest: neighbor[1] = 2 - neighbor[1]
+
+            for neighbor in nearest:
+                if neighbor[0][6] == 1: 
+                    neigh_satis += neighbor[1]
+                else               : 
+                    neigh_unsatis += neighbor[1]
+
+            if neigh_satis > neigh_unsatis: guess_result = 1
+            else                          : guess_result = 0
+
+        else:
+            nearest = [n for n,d in nearest]
+            for neighbor in nearest:
+                
+                if neighbor[6] == 1: neigh_satis+=1
+                else               : neigh_unsatis+=1
+
+            if neigh_satis > neigh_unsatis: guess_result = 1
+            else                          : guess_result = 0
 
         res.append((test, guess_result))
 
         # DEBUG
         tick += 1
-        if show_tick: 
+        if show_progress: 
             if tick%100 == 0: print("now in %dth test data"%tick)
         pass
 
@@ -51,6 +72,7 @@ def analyze(res):
 import time
 
 data = np.loadtxt("satisfaction_data.csv", delimiter=",", dtype=np.float32)
+np.random.shuffle(data)
 trainset = data[:18000]
 testset = data[18000:]
 
@@ -58,10 +80,9 @@ small_trainset = testset[:1800]
 small_testset = testset[1800:]
 
 
-
 print("start")
 s = time.time()
-res = classic_kNN(trainset, testset, 5)
+res = classic_kNN(small_trainset, small_testset, 5, leverage=True)
 e = time.time()
 print("end")
 
