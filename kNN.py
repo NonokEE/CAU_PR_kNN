@@ -1,7 +1,7 @@
 from xml.dom import minidom
 import numpy as np
 
-def kNN(trainset, testset, k, normalize = False, leverage = False, show_progress = False):
+def kNN(trainset, testset, k, normalize = False, leverage = False, show_process = False):
     res = []
     tick = 0
 
@@ -79,7 +79,7 @@ def kNN(trainset, testset, k, normalize = False, leverage = False, show_progress
 
         # DEBUG
         tick += 1
-        if show_progress: 
+        if show_process: 
             if tick%100 == 0: print("now in %dth test data"%tick)
         pass
     
@@ -110,7 +110,7 @@ small_testset = testset[1800:]
 
 print("start")
 s = time.time()
-res = kNN(small_trainset, small_testset, 5, normalize = False, leverage=False, show_progress=False)
+res = kNN(small_trainset, small_testset, 5, normalize = False, leverage=False, show_process=False)
 e = time.time()
 print("end")
 
