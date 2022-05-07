@@ -75,27 +75,29 @@ def kNN(trainset, testset, k, normalize = False, leverage = False, show_progress
             if neigh_satis > neigh_unsatis: guess_result = 1
             else                          : guess_result = 0
 
-        res.append((test, guess_result))
+        res.append(guess_result)
 
         # DEBUG
         tick += 1
         if show_progress: 
             if tick%100 == 0: print("now in %dth test data"%tick)
         pass
+    
+    testset = np.hstack((testset, np.zeros(len(testset)).reshape(-1,1)))
+    for i in range(len(testset)): testset[i][7] = res[i]
 
-    return res
+    return testset
 
-def analyze(res):
+def get_accuracy(res):
     count = 0
     for line in res:
-        real = int(line[0][6])
-        guess = line[1]
-        if real == guess: count+=1
+        if line[6] == line[7]: count+=1
     print("accuracy: %6f"%(count/len(res)))
+    return count/len(res)
     
 
 ###################
-
+"""
 import time
 
 data = np.loadtxt("satisfaction_data.csv", delimiter=",", dtype=np.float32)
@@ -108,9 +110,10 @@ small_testset = testset[1800:]
 
 print("start")
 s = time.time()
-res = kNN(small_trainset, small_testset, 5, normalize = True, leverage=False, show_progress=False)
+res = kNN(small_trainset, small_testset, 5, normalize = False, leverage=False, show_progress=False)
 e = time.time()
 print("end")
 
-analyze(res)
+get_accuracy(res)
 print("time: %6f sec"%(e-s))
+"""
