@@ -1,27 +1,9 @@
 import numpy as np
 
-a = np.array([[1,2,3],
-              [4,5,6],
-              [7,8,9],
-              [1,5,9]])
-test = []
 
-newa = a.copy()
-np.random.shuffle(newa)
-test.append(newa[0])
+a = [[3,1], [6,9], [4,7], [3,3], [13,2]]
+a.sort(key = lambda x: x[1])
+print(a)
 
-newa = a.copy()
-np.random.shuffle(newa)
-test.append(newa[0])
-newa = a.copy()
-np.random.shuffle(newa)
-test.append(newa[0])
-newa = a.copy()
-np.random.shuffle(newa)
-test.append(newa[0])
-newa = a.copy()
-np.random.shuffle(newa)
-test.append(newa[0])
-
-
-print(test)
+a = [y for x,y in a]
+print(a)
